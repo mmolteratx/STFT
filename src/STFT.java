@@ -42,24 +42,42 @@ public class STFT {
 
     // Test
     public static void main(String[] args) {
-        STFT stft = new STFT(3);
+        STFT stft = new STFT(16);
 
-        int N = 96;
+        int numWindows = 16;
+
+        int N = (int) Math.pow(2,24);
 
         double[] re = new double[N];
         double[] im = new double[N];
 
+        /*
         //Impulse
         for(int i = 0; i < N; i++) {
-            if(i % 32 == 0) {
+            if(i % 256 == 0) {
+                re[i] = 2;
+                im[i] = 0;
+            } else if (i % 128 == 0) {
                 re[i] = 1;
                 im[i] = 0;
             } else
                 re[i] = im[i] = 0;
+        } */
+
+        // Sin
+        for(int i = 0; i < N; i++) {
+            re[i] = Math.cos(2*Math.PI*i / (N / 8));
+            im[i] = 0;
         }
 
+        long startTime = System.nanoTime();
         ArrayList<ArrayList<double[]>> freq =  stft.stft(re, im);
+        long endTime = System.nanoTime();
+        long execTime = endTime - startTime;
 
+        System.out.println(execTime / (1000000) + " milliseconds");
+
+        /*
         int len = freq.get(0).size();
         System.out.println("Real: ");
         for(int i = 0; i < len; i++) {
@@ -77,6 +95,6 @@ public class STFT {
                 System.out.print(freq.get(1).get(i)[k] + " ");
             }
             System.out.println("]");
-        }
+        }*/
     }
 }

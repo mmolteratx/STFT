@@ -80,13 +80,14 @@ public class ParallelSTFT implements Callable {
     // Test functionality
     public static void main(String[] args) {
         int indx = 0;
-        int numWindows = 8;
+        int numWindows = 16;
 
-        int N = 1024;
+        int N = (int) Math.pow(2,24);
 
         double[] re = new double[N];
         double[] im = new double[N];
 
+        /*
         //Impulse
         for(int i = 0; i < N; i++) {
             if(i % 256 == 0) {
@@ -97,11 +98,21 @@ public class ParallelSTFT implements Callable {
                 im[i] = 0;
             } else
                 re[i] = im[i] = 0;
+        } */
+
+        // Sin
+        for(int i = 0; i < N; i++) {
+            re[i] = Math.cos(2*Math.PI*i / (N / 8));
+            im[i] = 0;
         }
 
+        long startTime = System.nanoTime();
         ArrayList<ArrayList<double[]>> results = parallelSTFT(re, im, numWindows, 4);
+        long endTime = System.nanoTime();
+        long execTime = endTime - startTime;
 
-        printResultsConsole(results, numWindows);
+        System.out.println(execTime / (1000000) + " milliseconds");
 
+        //printResultsConsole(results, numWindows);
     }
 }
