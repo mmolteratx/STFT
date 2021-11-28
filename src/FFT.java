@@ -28,9 +28,9 @@ public class FFT {
         makeWindow();
     }
 
+    // TODO: Try different windows
     protected void makeWindow() {
         // Blackman window
-        // w(n) = 0.42 - 0.5cos{((2*PI*n)/(N-1)} + 0.08cos{(4*PI*n)/(N-1)}
         window = new double[n];
         for(int i = 0; i < window.length; i++) {
             window[i] = 0.42 - 0.5 * Math.cos(2*Math.PI*i/(n-1)) +
@@ -90,5 +90,42 @@ public class FFT {
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        int N = 32;
+
+        FFT fft = new FFT(N);
+
+        double[] window = fft.getWindow();
+        double[] re = new double[N];
+        double[] im = new double[N];
+
+        //Impulse
+        re[0] = 1; im[0] = 0;
+        for(int i = 1; i < N; i++) {
+            re[i] = im[i] = 0;
+        }
+        beforeAfter(fft, re, im);
+    }
+
+    protected static void beforeAfter(FFT fft, double[] re, double[] im) {
+        System.out.println("Before: ");
+        printReIm(re, im);
+        fft.fft(re, im);
+        System.out.println("After: ");
+        printReIm(re, im);
+    }
+
+    protected static void printReIm(double[] re, double[] im) {
+        System.out.print("Re: [");
+        for (int i = 0; i < re.length; i++) {
+            System.out.print(((int) (re[i] * 1000) / 1000.0) + " ");
+        }
+        System.out.print("]\nIm: [");
+        for (int i = 0; i < im.length; i++) {
+            System.out.print(((int) (im[i] * 1000) / 1000.0) + " ");
+        }
+        System.out.println("]");
     }
 }
