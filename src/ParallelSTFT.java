@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -76,6 +79,56 @@ public class ParallelSTFT implements Callable {
         }
     }
 
+    public static void printResultsCSV(ArrayList<ArrayList<double[]>> res, int numWindows, String file) {
+
+        try {
+            File out = new File(file);
+            out.createNewFile();
+        } catch(IOException e) {
+            System.out.println("FILE ERROR");
+            System.exit(5);
+        }
+
+
+
+        try {
+            FileWriter myWriter = new FileWriter(file);
+
+            // Header
+            myWriter.write("Window,R/I");
+            for(int i = 0; i < res.get(0).get(0).length; i++) {
+                myWriter.write("," + i);
+            }
+
+            myWriter.write("\n");
+
+            // For every window
+            for(int i = 0; i < numWindows; i++) {
+                // real
+                myWriter.write(i + ",Real");
+                for(int j = 0; j < res.get(0).get(i).length; j++) {
+                    myWriter.write("," + res.get(0).get(i)[j]);
+                }
+
+                myWriter.write("\n");
+
+                // imag
+                myWriter.write(i + ",Imag");
+                for(int j = 0; j < res.get(1).get(i).length; j++) {
+                    myWriter.write("," + res.get(1).get(i)[j]);
+                }
+
+                myWriter.write("\n");
+            }
+
+            myWriter.close();
+        } catch(IOException e) {
+            System.out.println("FILE ERROR");
+            System.exit(5);
+        }
+
+    }
+
 
     // Test functionality
     public static void main(String[] args) {
@@ -83,6 +136,11 @@ public class ParallelSTFT implements Callable {
         int numWindows = 16;
 
         int N = (int) Math.pow(2,24);
+        N = 1024;
+        //N = 16384;
+        //N = 262144;
+        //N = 4194304;
+        //N = N * 2;
 
         double[] re = new double[N];
         double[] im = new double[N];
@@ -102,9 +160,15 @@ public class ParallelSTFT implements Callable {
 
         // Sin
         for(int i = 0; i < N; i++) {
-            re[i] = Math.cos(2*Math.PI*i / (N / 8));
+            re[i] = Math.cos(2*Math.PI*i / N);
             im[i] = 0;
         }
+
+        /*
+        for(int i = 0; i < N; i++) {
+            re[i] = i;
+            im[i] = 0;
+        }*/
 
         long startTime = System.nanoTime();
         ArrayList<ArrayList<double[]>> results = parallelSTFT(re, im, numWindows, 4);
@@ -112,6 +176,8 @@ public class ParallelSTFT implements Callable {
         long execTime = endTime - startTime;
 
         System.out.println(execTime / (1000000) + " milliseconds");
+
+        printResultsCSV(results, 16, "results.csv");
 
         //printResultsConsole(results, numWindows);
     }
