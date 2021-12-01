@@ -89,8 +89,6 @@ public class ParallelSTFT implements Callable {
             System.exit(5);
         }
 
-
-
         try {
             FileWriter myWriter = new FileWriter(file);
 
@@ -135,9 +133,9 @@ public class ParallelSTFT implements Callable {
         int indx = 0;
         int numWindows = 16;
 
-        int N = (int) Math.pow(2,24);
-        N = 1024;
-        //N = 16384;
+        int N = (int) Math.pow(2,12);
+        //N = 1024;
+        //N = 4096;
         //N = 262144;
         //N = 4194304;
         //N = N * 2;
@@ -160,7 +158,7 @@ public class ParallelSTFT implements Callable {
 
         // Sin
         for(int i = 0; i < N; i++) {
-            re[i] = Math.cos(2*Math.PI*i / N);
+            re[i] = Math.cos(2*Math.PI*i / (N / numWindows / 8));
             im[i] = 0;
         }
 
