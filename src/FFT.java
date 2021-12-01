@@ -36,6 +36,7 @@ public class FFT {
             window[i] = 0.42 - 0.5 * Math.cos(2*Math.PI*i/(n-1)) +
                     0.08 * Math.cos(4*Math.PI*i/(n-1));
         }
+
     }
 
     public double[] getWindow() {
@@ -45,7 +46,7 @@ public class FFT {
     public void fft(double[] x, double[] y) {
 
         int i, j, k, n1, n2, a;
-        double c, s, e, t1, t2;
+        double c, s, temp1, temp2;
 
         // Bit reverse
         j = 0;
@@ -59,34 +60,38 @@ public class FFT {
             j = j + n1;
 
             if(i < j) {
-                t1 = x[i];
+                temp1 = x[i];
                 x[i] = x[j];
-                t1 = y[i];
+                x[j] = temp1;
+                temp1 = y[i];
                 y[i] = y[j];
-                y[j] = t1;
+                y[j] = temp1;
             }
         }
 
         // FFT
         n1 = 0;
         n2 = 1;
+        // log
         for(i = 0; i < m; i++) {
             n1 = n2;
             n2 = n2 + n2;
             a = 0;
 
+            // n
             for(j = 0; j < n1; j++) {
                 c = cos[a];
                 s = sin[a];
                 a += 1 << (m-i-1);
 
+                // 1
                 for(k = j; k < n; k = k + n2) {
-                    t1 = c*x[k + n1] - s*y[k + n1];
-                    t2 = s*x[k + n1] - c*y[k + n1];
-                    x[k + n1]  = x[k] - t1;
-                    y[k + n1] = y[k] - t2;
-                    x[k] = x[k] + t1;
-                    y[k] = y[k] + t2;
+                    temp1 = c*x[k+n1] - s*y[k+n1];
+                    temp2 = s*x[k+n1] + c*y[k+n1];
+                    x[k+n1] = x[k] - temp1;
+                    y[k+n1] = y[k] - temp2;
+                    x[k] = x[k] + temp1;
+                    y[k] = y[k] + temp2;
                 }
             }
         }
@@ -95,6 +100,11 @@ public class FFT {
     public static void main(String[] args) {
 
         int N = (int) Math.pow(2,24);
+        N = 256;
+        //N = 16384;
+        //N = 262144;
+        //N = 4194304;
+        //N = N * 2;
 
         FFT fft = new FFT(N);
 
