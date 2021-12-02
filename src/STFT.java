@@ -23,11 +23,23 @@ public class STFT {
         int indx = 0;
         int currentWindow = 0;
 
+        FFT fft = new FFT(windowSize);
+
         while(currentWindow < numWindows) {
+            System.out.println(indx + " " + windowSize);
             double[] real = Arrays.copyOfRange(x, indx, indx + windowSize);
             double[] imag = Arrays.copyOfRange(y, indx, indx + windowSize);
-            FFT fft = new FFT(windowSize);
+            for(int k = 0; k < real.length; k++) {
+                System.out.print(real[k] + " ");
+            }
             fft.fft(real, imag);
+
+            System.out.println("");
+
+            for(int k = 0; k < real.length; k++) {
+                System.out.print(real[k] + " ");
+            }
+
             currentWindow += 1;
             indx += windowSize;
             realRes.add(real);
@@ -47,12 +59,18 @@ public class STFT {
         int numWindows = 16;
 
         int N = (int) Math.pow(2,24);
+        N = 4096;
+        //N = 16384;
+        //N = 262144;
+        //N = 4194304;
+        //N = N * 2;
+
 
         double[] re = new double[N];
         double[] im = new double[N];
 
         /*
-        //Impulse
+        //Impulse stream
         for(int i = 0; i < N; i++) {
             if(i % 256 == 0) {
                 re[i] = 2;
@@ -66,7 +84,7 @@ public class STFT {
 
         // Sin
         for(int i = 0; i < N; i++) {
-            re[i] = Math.cos(2*Math.PI*i / (N / 8));
+            re[i] = Math.cos(2*Math.PI*i / (256 / 8));
             im[i] = 0;
         }
 
@@ -77,7 +95,7 @@ public class STFT {
 
         System.out.println(execTime / (1000000) + " milliseconds");
 
-        /*
+
         int len = freq.get(0).size();
         System.out.println("Real: ");
         for(int i = 0; i < len; i++) {
@@ -95,6 +113,6 @@ public class STFT {
                 System.out.print(freq.get(1).get(i)[k] + " ");
             }
             System.out.println("]");
-        }*/
+        }
     }
 }

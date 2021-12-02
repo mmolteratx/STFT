@@ -131,9 +131,9 @@ public class ParallelSTFT implements Callable {
     // Test functionality
     public static void main(String[] args) {
         int indx = 0;
-        int numWindows = 16;
+        int numWindows = 6;
 
-        int N = (int) Math.pow(2,12);
+        int N = (int) Math.pow(2,10) * 6;
         //N = 1024;
         //N = 4096;
         //N = 262144;
@@ -169,13 +169,13 @@ public class ParallelSTFT implements Callable {
         }*/
 
         long startTime = System.nanoTime();
-        ArrayList<ArrayList<double[]>> results = parallelSTFT(re, im, numWindows, 4);
+        ArrayList<ArrayList<double[]>> results = parallelSTFT(re, im, numWindows, 6);
         long endTime = System.nanoTime();
         long execTime = endTime - startTime;
 
-        System.out.println(execTime / (1000000) + " milliseconds");
+        System.out.println(execTime / (1000) + " milliseconds");
 
-        printResultsCSV(results, 16, "results.csv");
+        //printResultsCSV(results, 16, "results.csv");
 
         //printResultsConsole(results, numWindows);
     }
